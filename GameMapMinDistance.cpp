@@ -6,7 +6,6 @@
 
 using namespace std;
 
-int total;
 class node {
 public:
     int x;
