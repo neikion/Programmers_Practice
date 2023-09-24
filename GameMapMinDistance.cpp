@@ -17,7 +17,6 @@ public:
 };
 int search(vector<vector<int>>& maps, vector<vector<int>> path) {
     path[0][0] = 1;
-    int pos[2];
     queue<node> waiting;
     waiting.push(node(0, 0));
     node targetnode, value;
