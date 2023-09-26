@@ -1,65 +1,73 @@
+//https://school.programmers.co.kr/learn/courses/30/lessons/43164
+
 #include <string>
 #include <vector>
-#include <queue>
 #include <algorithm>
 using namespace std;
-void resetTargetList(vector<int>& list, vector<vector<string>>& tickets) {
-    for (int i = 0; i < list.size(); i++) {
-        for (int j = i; j > -1; j--) {
-            if (tickets[list[i]][1].compare(tickets[list[j]][1]) < 0) {
-                int temp = list[i];
-                list[i] = list[j];
-                list[j] = temp;
+
+void sortList(vector<int>& list, vector<vector<string>>& tickets) {
+    if (list.size() < 2) {
+        return;
+    }
+    for (int i = 1; i < list.size(); i++) {
+        if (tickets[list[i - 1]][0].compare(tickets[list[i]][0]) >= 0) {
+            int temp = list[i];
+            int j;
+            for (j = i - 1; j > -1 && tickets[list[j]][0].compare(tickets[temp][0]) >= 0; j--) {
+                if (tickets[list[j]][0].compare(tickets[temp][0]) == 0) {
+                    if (tickets[list[j]][1].compare(tickets[temp][1]) > 0) {
+                        list[j + 1] = list[j];
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    list[j + 1] = list[j];
+                }
             }
+            list[j + 1] = temp;
         }
     }
 }
-vector<int> search(int target, vector<int> path, vector<vector<string>>& tickets) {
-    if (path.size() == tickets.size()) {
-        return path;
-    }
-    int check = -1;
 
+vector<int> search(int target, vector<int> path, vector<vector<string>>& tickets) {
+    vector<int> checklist;
+    path.push_back(target);
     for (int i = 0; i < tickets.size(); i++) {
         if (tickets[target][1].compare(tickets[i][0]) == 0) {
             if (find(path.begin(), path.end(), i) != path.end()) {
                 continue;
             }
-            if (check == -1) {
-                check = i;
-            }
-            else if (tickets[check][0].compare(tickets[i][0]) > 0) {
-                check = i;
+            checklist.push_back(i);
+        }
+    }
+
+    if (checklist.size() > 0) {
+        sortList(checklist, tickets);
+        for (int i = 0; i < checklist.size(); i++) {
+            vector<int> result = search(checklist[i], path, tickets);
+            if (result.size() == tickets.size()) {
+                return result;
             }
         }
     }
-    path.push_back(check);
-    if (path.size() == tickets.size()) {
-        return path;
-    }
-    return search(check, path, tickets);;
+    return path;
 }
+
 vector<string> solution(vector<vector<string>> tickets) {
     vector<string> answer;
-    int target = -1;
     vector<int> startlist;
     for (int i = 0; i < tickets.size(); i++) {
         if (tickets[i][0].compare("ICN") == 0) {
             startlist.push_back(i);
-            if (target == -1) {
-                target = i;
-            }
-            else if (tickets[target][1].compare(tickets[i][1]) > 0) {
-                target = i;
-            }
         }
     }
-
-    resetTargetList(startlist,tickets);
+    sortList(startlist, tickets);
     vector<int> result;
     for (int i = 0; i < startlist.size(); i++) {
-        result = search(startlist[i], vector<int>{startlist[i]}, tickets);
-        if (result.size() > 0) {
+        result = search(startlist[i], vector<int>(), tickets);
+        if (result.size() > 1) {
             break;
         }
     }
