@@ -9,7 +9,7 @@ namespace CorrectParenthesises {
     {
         stack<char> data;
         for (int i = 0; i < s.size(); i++) {
-            if (s[i] == '\(') {
+            if (s[i] == '(') {
                 data.push(s[i]);
             }
             else {
